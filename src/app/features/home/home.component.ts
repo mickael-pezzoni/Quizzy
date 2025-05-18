@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { QuizService } from "../quiz/quiz.service";
-import { Router } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 
 @Component({
   selector: "app-home",
@@ -20,7 +20,7 @@ import { Router } from "@angular/router";
 
         <!-- Bouton : Générer un quiz -->
         <a
-          href="builder.html"
+          routerLink="/builder"
           class="block w-full bg-purple-600 text-white font-semibold py-4 rounded-xl hover:bg-purple-700 transition mb-6"
         >
           ✨ Générer un quiz
@@ -48,7 +48,7 @@ import { Router } from "@angular/router";
       </div>
     </div>
   `,
-  imports: [],
+  imports: [RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [``],
 })

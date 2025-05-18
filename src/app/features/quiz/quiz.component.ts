@@ -6,6 +6,7 @@ import {
   inject,
   linkedSignal,
   signal,
+  untracked,
   viewChild,
 } from "@angular/core";
 import { ResponsesComponent } from "./responses/responses.component";
@@ -13,13 +14,13 @@ import { RouterModule } from "@angular/router";
 import { Question, Quiz, QuizResult } from "./quiz.model";
 import { SlidesComponent } from "../../shared/slides.component";
 import { ResultComponent } from "./result/result.component";
-import { QuizService } from "./quiz.service";
+import { QuizService, QuizStorage } from "./quiz.service";
 
 @Component({
   selector: "app-quiz",
   template: `
     <div
-      class="bg-gray-100 flex items-center justify-center min-h-screen relative"
+      class="bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center min-h-screen relative"
     >
       <a
         routerLink="/home"
@@ -111,14 +112,18 @@ import { QuizService } from "./quiz.service";
 export class QuizComponent {
   readonly responsesComponent = viewChild(ResponsesComponent);
   readonly quizService = inject(QuizService);
-  readonly questionIndex = signal(0);
+  readonly questionIndex = linkedSignal(
+    () => this.quiz().currentQuestionIndex || 0
+  );
   readonly isFinish = computed(
     () =>
-      Object.keys(this.userAnswers()).length === this.quizs().questions.length
+      Object.keys(this.userAnswers()).length === this.quiz().questions.length
   );
-  readonly userAnswers = signal<Record<string, string>>({});
+  readonly userAnswers = linkedSignal<Record<string, string>>(
+    () => this.quiz()?.userAnswers || {},
+  );
   readonly quizResult = computed<QuizResult>(() => {
-    const quiz = this.quizs();
+    const quiz = this.quiz();
     const answers = this.userAnswers();
     const totalQuestions = quiz.questions.length;
     const correctAnswers = quiz.questions.filter((question) => {
@@ -135,19 +140,25 @@ export class QuizComponent {
     };
   });
 
-  constructorr() {
+  constructor() {
     effect(() => {
-      console.log("Quiz ID:", this.quizResult());
+      const userAnswers = this.userAnswers();
+      untracked(() => {
+        this.quizService.setQuiz({
+          ...this.quiz(),
+          currentQuestionIndex: Object.keys(userAnswers).length,
+          userAnswers,
+        });
+      });
     });
   }
 
-  readonly quizs = signal<Quiz>(this.quizService.quiz as Quiz);
+  readonly quiz = signal<QuizStorage>(this.quizService.quiz as Quiz);
 
-  readonly questions = linkedSignal(() => this.quizs().questions);
+  readonly questions = linkedSignal(() => this.quiz().questions);
 
   onSelect(question: Question, answerId: string | undefined): void {
     if (!answerId) return;
-    console.log("Selected answer ID:", answerId);
     this.userAnswers.update((answers) => ({
       ...answers,
       [question.id]: answerId,
