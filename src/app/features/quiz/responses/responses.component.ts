@@ -27,11 +27,9 @@ import { CommonModule } from '@angular/common'
 export class ResponsesComponent {
     readonly answers = model.required<Answer[]>()
     readonly selectedAnswer = model<string | undefined>()
-    // readonly currentAnswer = linkedSignal(() => this.selectedAnswer())
     readonly selectAnswer = output<string>()
     onSelect(answer: Answer) {
         this.selectedAnswer.set(answer.id)
-        // this.selectAnswer.emit(answer.id)
     }
 
 }
