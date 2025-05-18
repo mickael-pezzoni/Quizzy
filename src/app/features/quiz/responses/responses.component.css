@@ -1,0 +1,13 @@
+
+.selected {
+    @apply ring-blue-500;
+}
+.correct {
+    @apply border border-green-500 text-green-800;
+}
+.bad_response {
+    @apply border border-red-500 text-red-800;
+}
+.actif {
+    @apply hover:bg-blue-100
+}
