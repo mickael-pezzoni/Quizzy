@@ -12,7 +12,7 @@ import { Router } from "@angular/router";
         class="w-full max-w-lg bg-white rounded-3xl shadow-xl p-8 text-center"
       >
         <h1 class="text-3xl font-bold mb-6 text-gray-800">
-          Bienvenue dans le Quiz Builder 🎉
+          Bienvenue dans Quizzy 🎉
         </h1>
         <p class="text-gray-600 mb-8">
           Choisissez une méthode pour démarrer votre quiz :
