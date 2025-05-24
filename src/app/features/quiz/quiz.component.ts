@@ -12,7 +12,7 @@ import {
 import { ResponsesComponent } from "./responses/responses.component";
 import { RouterModule } from "@angular/router";
 import { Question, Quiz, QuizResult } from "./quiz.model";
-import { SlidesComponent } from "../../shared/slides.component";
+import { SlidesComponent } from "../../shared/components/slides.component";
 import { ResultComponent } from "./result/result.component";
 import { QuizService, QuizStorage } from "./quiz.service";
 
@@ -20,7 +20,7 @@ import { QuizService, QuizStorage } from "./quiz.service";
   selector: "app-quiz",
   template: `
     <div
-      class="bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center min-h-screen relative"
+      class="flex items-center justify-center min-h-screen relative"
     >
       <a
         routerLink="/home"

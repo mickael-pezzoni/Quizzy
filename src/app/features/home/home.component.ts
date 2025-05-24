@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { QuizService } from "../quiz/quiz.service";
 import { Router, RouterModule } from "@angular/router";
+import { DropFileDirective } from "../../shared/directives/drop-file.directive";
+import { Quiz } from "../quiz/quiz.model";
 
 @Component({
   selector: "app-home",
   template: `
-    <div
-      class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center justify-center"
-    >
+    <div class="min-h-screen flex items-center justify-center">
       <div
         class="w-full max-w-lg bg-white rounded-3xl shadow-xl p-8 text-center"
       >
@@ -29,6 +29,9 @@ import { Router, RouterModule } from "@angular/router";
         <!-- Zone de drop pour importer un quiz -->
         <label
           for="file-input"
+          dragOverClass="bg-blue-100"
+          (fileDroped)="onDropFile($event)"
+          appDropFile
           class="block border-4 border-dashed border-blue-300 rounded-xl p-10 bg-blue-50 hover:bg-blue-100 transition cursor-pointer"
         >
           <p class="text-blue-500 font-semibold">
@@ -48,28 +51,44 @@ import { Router, RouterModule } from "@angular/router";
       </div>
     </div>
   `,
-  imports: [RouterModule],
+  imports: [RouterModule, DropFileDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [``],
 })
 export class HomeComponent {
-  readonly quizService = inject(QuizService)
-  readonly router = inject(Router)
-  onChange(event: Event): void {
+  readonly quizService = inject(QuizService);
+  readonly router = inject(Router);
+  async onChange(event: Event): Promise<void> {
     const files = (event.target as HTMLInputElement).files;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = (e.target as FileReader).result;
-      if (typeof content === "string") {
-        const jsonContent = JSON.parse(content);
-        this.quizService.setQuiz(jsonContent);
-        this.router.navigateByUrl('quiz')
-        console.log(jsonContent);
-      }
-    };
-    if (files && files.length > 0) {
-      const file = files[0];
-      reader.readAsText(file);
+    const file = files?.[0];
+    if (!file) {
+      return;
     }
+    const quiz = await this.readFile(file);
+    this.quizService.setQuiz(quiz);
+    this.router.navigateByUrl("quiz");
+  }
+
+  async onDropFile(file: File): Promise<void> {
+    const quiz = await this.readFile(file);
+    this.quizService.setQuiz(quiz);
+    this.router.navigateByUrl("quiz");
+  }
+
+  readFile(file: File): Promise<Quiz> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = (e.target as FileReader).result;
+        if (typeof content === "string") {
+          const jsonContent = JSON.parse(content);
+          resolve(jsonContent);
+        }
+      };
+      reader.onerror = () => {
+        reject()
+      }
+      reader.readAsText(file);
+    });
   }
 }
