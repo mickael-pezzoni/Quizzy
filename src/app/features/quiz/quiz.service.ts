@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import { Quiz } from "./quiz.model";
 
 export type QuizStorage = Quiz & {
@@ -8,7 +8,7 @@ export type QuizStorage = Quiz & {
 
 @Injectable({providedIn: "root"})
 export class QuizService {
-    quiz?: Quiz = this.getQuiz();
+    readonly quiz = signal<Quiz | undefined>(this.getQuiz());
 
     getQuiz(): QuizStorage | undefined {
         const quiz = localStorage.getItem("quiz");
@@ -20,6 +20,6 @@ export class QuizService {
 
     setQuiz(quiz: QuizStorage): void {
         localStorage.setItem("quiz", JSON.stringify(quiz));
-        this.quiz = quiz;
+        this.quiz.set(quiz)
     }
 }

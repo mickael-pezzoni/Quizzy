@@ -16,7 +16,7 @@ import { CommonModule } from "@angular/common";
     <button
       [disabled]="selectedAnswer() !== undefined"
       (click)="onSelect(answer)"
-      class="w-full bg-gray-100  p-4 rounded-lg text-left transition 
+      class="w-full bg-gray-100 p-4 rounded-lg text-left transition 
     {{
         selectedAnswer() && answer.isCorrect
           ? 'bg-green-100 border border-green-500 text-green-800'

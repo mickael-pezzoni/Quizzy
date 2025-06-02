@@ -19,25 +19,25 @@ import { QuizService, QuizStorage } from "./quiz.service";
 @Component({
   selector: "app-quiz",
   template: `
-    <div
-      class="flex items-center justify-center min-h-screen relative"
-    >
+    <div class="fixed top-0 w-full flex justify-between p-5 z-1">
       <a
         routerLink="/home"
-        class="fixed cursor-pointer top-5 left-5 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm px-4 py-2 rounded-lg shadow-md transition z-50"
+        class="cursor-pointer bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm px-4 py-2 rounded-lg shadow-md transition z-50"
       >
         🏠 Accueil
       </a>
 
       <a
         href="#"
-        class="fixed top-5 right-5 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm px-4 py-2 rounded-lg shadow-md transition z-50"
+        class=" bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm px-4 py-2 rounded-lg shadow-md transition z-50"
         download
       >
         ⬇️ Télécharger le quiz
       </a>
+    </div>
+    <div class="flex-1 flex items-center justify-center h-full relative">
       <div
-        class="w-full max-w-xl min-h-[600px] flex justify-center items-center flex-col bg-white rounded-2xl shadow-lg p-8"
+        class="w-full sm:max-w-xl min-h-[600px] flex justify-center items-center flex-col bg-white rounded-2xl shadow-lg p-8"
       >
         @if (!isFinish()) {
 
@@ -65,7 +65,8 @@ import { QuizService, QuizStorage } from "./quiz.service";
             <div class="mb-6">
               <img
                 [src]="currentSlide?.image"
-                class="w-full h-64 object-cover rounded-lg shadow-md"
+                alt="Image de la question"
+                class="w-full h-auto sm:min-h-[200px] sm:max-h-[300px] object-contain rounded-lg shadow-md"
               />
             </div>
 
@@ -84,15 +85,21 @@ import { QuizService, QuizStorage } from "./quiz.service";
               <button
                 [disabled]="index === 0"
                 (click)="slides.moveLeft()"
-                class="bg-blue-100 text-blue-400 px-6 py-2 rounded-lg transition"
+                class="px-6 py-2 rounded-lg transition 
+         bg-green-600 text-white hover:bg-green-700
+         disabled:bg-green-300 disabled:text-green-700 
+         disabled:cursor-not-allowed disabled:opacity-50"
               >
                 ← Précédent
               </button>
+
               <button
                 (click)="slides.moveRight()"
                 [disabled]="isDisabled"
-                [class.disabled]="isDisabled"
-                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                class="px-6 py-2 rounded-lg transition 
+         bg-blue-600 text-white hover:bg-blue-700
+         disabled:bg-blue-300 disabled:text-blue-700 
+         disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Suivant →
               </button>
@@ -107,6 +114,9 @@ import { QuizService, QuizStorage } from "./quiz.service";
   `,
   imports: [ResponsesComponent, RouterModule, SlidesComponent, ResultComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: "h-full",
+  },
   styles: [``],
 })
 export class QuizComponent {
@@ -120,7 +130,7 @@ export class QuizComponent {
       Object.keys(this.userAnswers()).length === this.quiz().questions.length
   );
   readonly userAnswers = linkedSignal<Record<string, string>>(
-    () => this.quiz()?.userAnswers || {},
+    () => this.quiz()?.userAnswers || {}
   );
   readonly quizResult = computed<QuizResult>(() => {
     const quiz = this.quiz();
@@ -153,7 +163,7 @@ export class QuizComponent {
     });
   }
 
-  readonly quiz = signal<QuizStorage>(this.quizService.quiz as Quiz);
+  readonly quiz = signal<QuizStorage>(this.quizService.quiz() as Quiz);
 
   readonly questions = linkedSignal(() => this.quiz().questions);
 
